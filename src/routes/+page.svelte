@@ -6,16 +6,15 @@
   interface TimerConfig {
     id: number;
     name: string;
-    minutes: number;
     seconds: number;
-    time: string; 
+    time: string;
     color: string;
   }
   
   let sidebarOpen: boolean = false;
   let timers: TimerConfig[] = [];
   let numTimers: number = 2;
-  const colors = ["#4caf50","#f44336","#2196f3","#ff9800"];
+  const colors = ["#6a4cff","#2a4cff","#B892FF","#E992FF"];
   let globalTime = 0;
   let globalRunning = false;
   let globalInterval: number;
@@ -34,9 +33,8 @@
       timers.push({
         id: i + 1,
         name: `Timer ${i + 1}`,
-        minutes: 1,
-        seconds: 0,
-        time: "1:00", 
+        seconds: 30,
+        time: "60",
         color: colors[i % colors.length]
       });
     }
@@ -56,20 +54,14 @@
   }
 
   function updateTime(timer: TimerConfig) {
-    const parts = timer.time.split(":");
+    const seconds = parseInt(timer.time);
 
-    if (parts.length !== 2) return;
+    if (isNaN(seconds) || seconds < 0) return;
 
-    const min = parseInt(parts[0]);
-    const sec = parseInt(parts[1]);
+    timer.seconds = seconds;
 
-    if (!isNaN(min) && !isNaN(sec) && sec >= 0 && sec < 60) {
-      timer.minutes = min;
-      timer.seconds = sec;
-
-      // 👇 força reatividade
-      timers = [...timers];
-    }
+    // 👇 força reatividade
+    timers = [...timers];
   }
 
 
@@ -122,15 +114,15 @@ function formatGlobalTime(seconds: number) {
 <Slider bind:open={sidebarOpen}>
   <h2 class="sidebar-title">Settings</h2>
   <div class="timer-selector">
-  {#each [1,2,3,4] as number}
-    <button
-      class="timer-block {numTimers === number ? 'active' : ''}"
-      on:click={() => selectTimers(number)}
-    >
-      {number}
-    </button>
-  {/each}
-</div>
+    {#each [1,2,3,4] as number}
+      <button
+        class="timer-block {numTimers === number ? 'active' : ''}"
+        on:click={() => selectTimers(number)}
+      >
+        {number}
+      </button>
+    {/each}
+  </div>
 
   {#each timers as timer}
     <div class="timer-config">
@@ -139,12 +131,14 @@ function formatGlobalTime(seconds: number) {
         <input type="text" bind:value={timer.name} />
       </label>
       <label class="inline-label">
-        Time (MM:SS):
+        Time (seconds):
         <input
-          type="text"
+          type="number"
+          min="0"
+          inputmode="numeric"
           bind:value={timer.time}
           on:input={() => updateTime(timer)}
-          placeholder="0:30"
+          placeholder="30"
         />
       </label>
     </div>
@@ -157,7 +151,6 @@ function formatGlobalTime(seconds: number) {
     <div class="timer-wrapper">
       <Timer
         id={timer.id.toString()}
-        defaultMinutes={timer.minutes}
         defaultSeconds={timer.seconds}
         color={timer.color}
         resetSignal={resetAll}
@@ -242,10 +235,9 @@ function formatGlobalTime(seconds: number) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: #430caa 2px solid;
+    border: #8226fa 2px solid;
     border-radius: 20px;
     padding: 1rem;
-    background-color: #6a1aac;
   }
 
   .timer-wrapper:last-child:nth-child(odd) {
@@ -318,15 +310,15 @@ function formatGlobalTime(seconds: number) {
   cursor: pointer;
 }
 
-  .global-circle {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    font-size: 2rem;
-    font-weight: bold;
-    border: 4px solid #430caa;
-    background: white;
-    cursor: pointer;
-  }
+.global-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  font-size: 2rem;
+  font-weight: bold;
+  border: 4px solid #430caa;
+  background: white;
+  cursor: pointer;
+}
 
 </style>

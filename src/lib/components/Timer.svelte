@@ -2,15 +2,14 @@
   import { onDestroy } from 'svelte';
 
   export let id: string;
-  export let defaultMinutes: number = 1;
-  export let defaultSeconds: number = 0; 
+  export let defaultSeconds: number = 30;
   export let color: string = '#4caf50';
   export let resetSignal: number;
   let running: boolean = false;
   let startTimestamp: number = 0;
   let interval: number;
 
-  let totalTime = defaultMinutes * 60 + defaultSeconds;
+  let totalTime = defaultSeconds;
 
   let timeLeft: number = totalTime;
   let remainingBeforePause: number = totalTime;
@@ -20,7 +19,7 @@
   }
 
   $: {
-    const newTotal = defaultMinutes * 60 + defaultSeconds;
+    const newTotal = defaultSeconds;
 
     if (newTotal !== totalTime && !running) {
       totalTime = newTotal;
@@ -31,9 +30,8 @@
 
 
   const formatTime = (seconds: number): string => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
+    const displayed = Math.max(seconds, 0);
+    return displayed.toFixed(2);
   };
 
   function toggleTimer(): void {
@@ -42,7 +40,7 @@
       startTimestamp = Date.now();
 
       interval = window.setInterval(() => {
-        const elapsed = Math.floor((Date.now() - startTimestamp) / 1000);
+        const elapsed = (Date.now() - startTimestamp) / 1000;
         timeLeft = remainingBeforePause - elapsed;
 
         if (timeLeft <= 0) {
@@ -51,11 +49,11 @@
           clearInterval(interval);
           remainingBeforePause = 0;
 
-          const audio = new Audio('/alarm.mp3');
-          audio.play();
+          //const audio = new Audio('/alarm.mp3');
+          //audio.play();
           if (navigator.vibrate) navigator.vibrate(1000);
         }
-      }, 200);
+      }, 50);
 
     } else {
       running = false;
@@ -89,7 +87,7 @@
     style="background: conic-gradient({color} {progress}%, #ddd {progress}% 100%);"
     on:click={toggleTimer}
     on:contextmenu|preventDefault={resetTimer}
-    aria-label={`Timer ${id}, ${formatTime(timeLeft)} minutos`}
+    aria-label={`Timer ${id}, ${formatTime(timeLeft)} segundos`}
   >
     <span class="time">{formatTime(timeLeft)}</span>
   </button>
@@ -103,7 +101,6 @@
     flex-direction: column;
     align-items: center;
     margin: 1rem;
-    
   }
 
   button.circle {
