@@ -249,6 +249,7 @@ function formatGlobalTime(seconds: number) {
     margin-top: 0.3rem;
     font-weight: bold;
     text-align: center;
+    color:rgba(255, 255, 255, 0.705);
   }
   
   .sidebar-title{

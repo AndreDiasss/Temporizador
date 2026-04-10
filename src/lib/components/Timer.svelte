@@ -123,5 +123,6 @@
     font-weight: bold;
     position: absolute;
     user-select: none;
+    color: Black;
   }
 </style>
